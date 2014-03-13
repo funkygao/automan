@@ -12,7 +12,7 @@
 namespace phpDocumentor\Descriptor\Builder\Reflector\Tags;
 
 use phpDocumentor\Descriptor\Builder\Reflector\AssemblerAbstract;
-use phpDocumentor\Descriptor\Tag\ParamDescriptor;
+use phpDocumentor\Descriptor\Tag\InputDescriptor;
 use phpDocumentor\Reflection\DocBlock\Tag\InputTag;
 
 class InputAssembler extends AssemblerAbstract
