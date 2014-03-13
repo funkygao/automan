@@ -1,0 +1,64 @@
+diff --git a/Descriptor/ServiceProvider.php b/Descriptor/ServiceProvider.php
+index 9220ccb..d3e7240 100644
+--- a/Descriptor/ServiceProvider.php
++++ b/Descriptor/ServiceProvider.php
+@@ -28,6 +28,8 @@ use phpDocumentor\Descriptor\Builder\Reflector\Tags\GenericTagAssembler;
+ use phpDocumentor\Descriptor\Builder\Reflector\Tags\LinkAssembler;
+ use phpDocumentor\Descriptor\Builder\Reflector\Tags\MethodAssembler as MethodTagAssembler;
+ use phpDocumentor\Descriptor\Builder\Reflector\Tags\ParamAssembler;
++use phpDocumentor\Descriptor\Builder\Reflector\Tags\InputAssembler;
++use phpDocumentor\Descriptor\Builder\Reflector\Tags\OutputAssembler;
+ use phpDocumentor\Descriptor\Builder\Reflector\Tags\PropertyAssembler as PropertyTagAssembler;
+ use phpDocumentor\Descriptor\Builder\Reflector\Tags\ReturnAssembler;
+ use phpDocumentor\Descriptor\Builder\Reflector\Tags\SeeAssembler;
+@@ -50,6 +52,8 @@ use phpDocumentor\Reflection\DocBlock\Tag\DeprecatedTag;
+ use phpDocumentor\Reflection\DocBlock\Tag\LinkTag;
+ use phpDocumentor\Reflection\DocBlock\Tag\MethodTag;
+ use phpDocumentor\Reflection\DocBlock\Tag\ParamTag;
++use phpDocumentor\Reflection\DocBlock\Tag\InputTag;
++use phpDocumentor\Reflection\DocBlock\Tag\OutputTag;
+ use phpDocumentor\Reflection\DocBlock\Tag\PropertyTag;
+ use phpDocumentor\Reflection\DocBlock\Tag\ReturnTag;
+ use phpDocumentor\Reflection\DocBlock\Tag\SeeTag;
+@@ -124,6 +128,8 @@ class ServiceProvider implements ServiceProviderInterface
+         $methodTagMatcher   = function ($criteria) { return $criteria instanceof MethodTag; };
+         $propertyTagMatcher = function ($criteria) { return $criteria instanceof PropertyTag; };
+         $paramMatcher       = function ($criteria) { return $criteria instanceof ParamTag; };
++        $inputMatcher       = function ($criteria) { return $criteria instanceof InputTag; };
++        $outputMatcher      = function ($criteria) { return $criteria instanceof OutputTag; };
+         $throwsMatcher      = function ($criteria) { return $criteria instanceof ThrowsTag; };
+         $returnMatcher      = function ($criteria) { return $criteria instanceof ReturnTag; };
+         $usesMatcher        = function ($criteria) { return $criteria instanceof UsesTag; };
+@@ -151,6 +157,8 @@ class ServiceProvider implements ServiceProviderInterface
+         $factory->register($methodTagMatcher, new MethodTagAssembler());
+         $factory->register($propertyTagMatcher, new PropertyTagAssembler());
+         $factory->register($paramMatcher, new ParamAssembler());
++        $factory->register($inputMatcher, new InputAssembler());
++        $factory->register($outputMatcher, new OutputAssembler());
+         $factory->register($throwsMatcher, new ThrowsAssembler());
+         $factory->register($returnMatcher, new ReturnAssembler());
+         $factory->register($usesMatcher, new UsesAssembler());
+diff --git a/Plugin/Core/Transformer/Writer/Xml.php b/Plugin/Core/Transformer/Writer/Xml.php
+index 6c20bd8..a7500b3 100644
+--- a/Plugin/Core/Transformer/Writer/Xml.php
++++ b/Plugin/Core/Transformer/Writer/Xml.php
+@@ -37,6 +37,8 @@ use phpDocumentor\Plugin\Core\Transformer\Behaviour\Tag\InternalTag;
+ use phpDocumentor\Plugin\Core\Transformer\Behaviour\Tag\LicenseTag;
+ use phpDocumentor\Plugin\Core\Transformer\Behaviour\Tag\MethodTag;
+ use phpDocumentor\Plugin\Core\Transformer\Behaviour\Tag\ParamTag;
++use phpDocumentor\Plugin\Core\Transformer\Behaviour\Tag\InputTag;
++use phpDocumentor\Plugin\Core\Transformer\Behaviour\Tag\OutputTag;
+ use phpDocumentor\Plugin\Core\Transformer\Behaviour\Tag\PropertyTag;
+ use phpDocumentor\Plugin\Core\Transformer\Behaviour\Tag\ReturnTag;
+ use phpDocumentor\Plugin\Core\Transformer\Behaviour\Tag\UsesTag;
+@@ -435,6 +437,10 @@ class Xml extends WriterAbstract implements Translatable
+         $behaviour->process($this->xml);
+         $behaviour = new ParamTag();
+         $behaviour->process($this->xml);
++        $behaviour = new InputTag();
++        $behaviour->process($this->xml);
++        $behaviour = new OutputTag();
++        $behaviour->process($this->xml);
+         $behaviour = new PropertyTag();
+         $behaviour->process($this->xml);
+         $behaviour = new ReturnTag();
