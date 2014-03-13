@@ -6,11 +6,11 @@ extension for phpDocumentor that can support @input @output tag
 Features
 ========
 
-*   helps frontend/backend/pm all
-    - parallel dev
-    - contract by auto generated doc
 *   auto generate api documentation
 *   auto generate runnable backend integration test scripts
+*   helps frontend/backend/PM all
+    - parallel development
+    - contract by auto generated doc
 *   keep doc and src close enough
     - less maintainance cost
     - better readability
