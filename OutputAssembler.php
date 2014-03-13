@@ -26,7 +26,7 @@ class OutputAssembler extends AssemblerAbstract
      */
     public function create($data)
     {
-        $descriptor = new OutDescriptor($data->getName());
+        $descriptor = new OutputDescriptor($data->getName());
         $descriptor->setDescription($data->getDescription());
         //$descriptor->setVariableName($data->getVariableName());
         $descriptor->setTypes($data->getTypes());
