@@ -25,23 +25,23 @@ Usage
            |  1. design the call interface          |           |
            |<-------------------------------------->|           |
            |                                        |           |
-           |----+                                   |           |
-           |    |                                   |           |
-           |    | write php skeleton                |           |
-           |    | @input/@output tags               |           |
-           |    |                                   |           |
-           |<---+                                   |           |
+           |-----+                                  |           |
+           |     |                                  |           |
+           |  2. | write php skeleton               |           |
+           |     | @input/@output tags              |           |
+           |     |                                  |           |
+           |<----+                                  |           |
            |                                        |           |
            |                                        |           |
            |  3. export generated api doc           |           |
            |--------------------------------------->|---------->|
            |                                        |           |
            |                                        |           |
-           |----+                                   |           |
-           |    |                                   |           |
-           |    | run generated test scripts        |           |
-           |    |                                   |           |
-           |<---+                                   |           |
+           |-----+                                  |           |
+           |     |                                  |           |
+           |  4. | run generated test scripts       |           |
+           |     |                                  |           |
+           |<----+                                  |           |
            |                                        |           |
            |                                        |           |
 
