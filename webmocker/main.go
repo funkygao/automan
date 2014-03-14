@@ -7,7 +7,7 @@ import (
 const (
 	LISTEN_ADDR = ":9001"
 	DEBUG_ADDR  = ":9002"
-	CONFIG      = "automan.cf"
+	CONFIG      = "automan.json"
 )
 
 func main() {
