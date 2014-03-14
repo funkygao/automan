@@ -5,8 +5,8 @@ namespace Services;
 class example {
 
     /**
-     * @InputTag(jsonf='hello.i.json')
-     * @OutputTag(jsonf='hello.o.json')
+     * @InputTag(jsonf='json/hello.i.json')
+     * @OutputTag(jsonf='json/hello.o.json')
      * @param array $param
      * @return array
      */
