@@ -157,7 +157,7 @@ class Automan
         }
     }
 
-    public function generateWebMockerConfig($parsedResult)
+    public function generateWebMockerData($parsedResult)
     {
         $fp = fopen(self::WEBMOCK_CONFIG, 'w');
         fwrite($fp, json_encode($parsedResult, JSON_PRETTY_PRINT));
@@ -189,7 +189,7 @@ function main() {
         $result = $man->parsePhpFile($filename);
         $man->generateTestScript($result);
         $man->generateApiDoc($result);
-        $man->generateWebMockerConfig($result);
+        $man->generateWebMockerData($result);
     }
 }
 
