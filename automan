@@ -106,7 +106,15 @@ class Automan
     public function generateTestScript($parsedResult)
     {
         foreach ($parsedResult['api'] as $api) {
+            if (!is_array($api)) {
+                throw Exception("invalid parsed result");
+            }
+
             $curl = 'curl -G ' . $api['url'] . " -d '";
+            foreach ($api['io']['input'] as $name => $val) {
+                // TODO nested json tree
+                $curl .= 'params[' . $name . ']=' . urlencode($val) . '&';
+            }
             $curl .= "'";
             echo $curl . PHP_EOL;
         }
