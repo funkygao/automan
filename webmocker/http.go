@@ -9,7 +9,7 @@ import (
 )
 
 func handleHttpQuery(w http.ResponseWriter, req *http.Request,
-	params map[string]interface{}, api apiConfig) (interface{}, error) {
+	params map[string]interface{}) (interface{}, error) {
 	body := make(map[string]interface{})
 	decoder := json.NewDecoder(req.Body)
 	if err := decoder.Decode(&body); err != nil && err != io.EOF {
@@ -19,6 +19,11 @@ func handleHttpQuery(w http.ResponseWriter, req *http.Request,
 
 	uri, _ := url.Parse(req.RequestURI)
 	log.Info("request: {url:%s, body:%+v}", uri.Path, body)
+	api, ok := apis[uri.Path]
+	if !ok {
+		return nil, ErrNotFound
+	}
+
 	log.Info("response: %+v", api.output)
 
 	return api.output, nil
