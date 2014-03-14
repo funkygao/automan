@@ -29,14 +29,14 @@ class Automan
 
     private function _handleAnnotationTag($filename, Annotation $tag)
     {
-        if ($tag instanceof InputTag) {
+        if ($tag instanceof In) {
             return $this->_handleInputTag($filename, $tag);
-        } elseif ($tag instanceof OutputTag) {
+        } elseif ($tag instanceof Out) {
             return $this->_handleOutputTag($filename, $tag);
         }
     }
 
-    private function _handleInputTag($filename, InputTag $tag)
+    private function _handleInputTag($filename, In $tag)
     {
         return array(
             'input' => $tag->getJsonArray($filename),
@@ -44,7 +44,7 @@ class Automan
 
     }
 
-    private function _handleOutputTag($filename, OutputTag $tag)
+    private function _handleOutputTag($filename, Out $tag)
     {
         return array(
             'output' => $tag->getJsonArray($filename),
@@ -84,7 +84,7 @@ class Automan
             $p = new ReflectionAnnotatedMethod($method->class, $method->name);
             $hasTag = FALSE;
             $inputOutput = array();
-            foreach (array('InputTag', 'OutputTag') as $tagName) {
+            foreach (array('In', 'Out') as $tagName) {
                 $tag = $p->getAnnotation($tagName);
                 if (!$tag) {
                     continue;
@@ -114,6 +114,7 @@ class Automan
 
     public function generateTestScript($parsedResult)
     {
+        print_r($parsedResult);
         foreach ($parsedResult['api'] as $api) {
             if (!is_array($api)) {
                 throw Exception("invalid parsed result");
