@@ -2,6 +2,14 @@ automan
 =======
 
 Auto generate api doc for backend/frontend developpers for collaboration.
+    
+                   __                                
+    _____   __ ___/  |_  ____   _____ _____    ____  
+    \__  \ |  |  \   __\/  _ \ /     \\__  \  /    \ 
+     / __ \|  |  /|  | (  <_> )  Y Y  \/ __ \|   |  \
+    (____  /____/ |__|  \____/|__|_|  (____  /___|  /
+         \/                         \/     \/     \/ 
+    
 
 Features
 ========
