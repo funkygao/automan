@@ -160,7 +160,7 @@ class Automan
     public function generateWebMockerConfig($parsedResult)
     {
         $fp = fopen(self::WEBMOCK_CONFIG, 'w');
-        fwrite($fp, json_encode($parsedResult));
+        fwrite($fp, json_encode($parsedResult, JSON_PRETTY_PRINT));
         fclose($fp);
         echo self::WEBMOCK_CONFIG, " genereted!" . PHP_EOL;
     }
