@@ -1,13 +1,14 @@
-iodoc
-=====
+automan
+=======
 
-extension for phpDocumentor that can support @input @output tag
+Auto generate api doc for backend/frontend developpers for collaboration.
 
 Features
 ========
 
 *   auto generate api documentation
 *   auto generate runnable backend integration test scripts
+*   auto generate web server that can reply to frontend request according to tags definition
 *   helps frontend/backend/PM all
     - parallel development
     - contract by auto generated doc
