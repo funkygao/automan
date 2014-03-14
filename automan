@@ -75,7 +75,7 @@ class Automan
             // handle this controller action
             $p = new ReflectionAnnotatedMethod($method->class, $method->name);
             $hasTag = FALSE;
-            $docs = array();
+            $inputOutput = array();
             foreach (array('InputTag', 'OutputTag') as $tagName) {
                 $tag = $p->getAnnotation($tagName);
                 if (!$tag) {
@@ -85,7 +85,7 @@ class Automan
                 $hasTag = TRUE;
                 if ($res = $this->_handleAnnotationTag($filename, $tag)) {
                     foreach ($res as $key => $val) {
-                        $docs[$key] = $val;
+                        $inputOutput[$key] = $val;
                     }
                 }
             }
@@ -95,7 +95,7 @@ class Automan
                     'controller' => $this->_baseClassName($filename),
                     'action' => $method->name,
                     'url' => $this->_getApiUrl($filename, $method),
-                    'io' => $docs,
+                    'io' => $inputOutput,
                 );
             }
         }
