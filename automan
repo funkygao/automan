@@ -102,6 +102,17 @@ class Automan
 
         return $ret;
     }
+
+    public function generateTestScript($parsedResult)
+    {
+
+    }
+
+    public function generateApiDoc($parsedResult)
+    {
+
+    }
+
 }
 
 function showHelp() {
@@ -124,7 +135,8 @@ function main() {
         }
 
         $result = $man->parsePhpFile($filename);
-        print_r($result);
+        $man->generateTestScript($result);
+        $man->generateApiDoc($result);
     }
 }
 
