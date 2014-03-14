@@ -29,10 +29,10 @@ function parsePhpFile($filename) {
 
             if ($tag instanceof InputTag) {
                 $jsonFile = dirname($filename) . '/' . $tag->jsonf;
-                print_r(json_decode(file_get_contents($jsonFile)));
+                print_r(json_decode(file_get_contents($jsonFile), TRUE));
             } elseif ($tag instanceof OutputTag) {
                 $jsonFile = dirname($filename) . '/' . $tag->jsonf;
-                print_r(json_decode(file_get_contents($jsonFile)));
+                print_r(json_decode(file_get_contents($jsonFile), TRUE));
             }
         }
     }
