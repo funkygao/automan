@@ -28,12 +28,25 @@ class Automan
     private function _handleAnnotationTag($filename, Annotation $tag)
     {
         if ($tag instanceof InputTag) {
-            $jsonFile = dirname($filename) . '/' . $tag->jsonf;
-            print_r(json_decode(file_get_contents($jsonFile), TRUE));
+            $this->_handleInputTag($filename, $tag);
         } elseif ($tag instanceof OutputTag) {
-            $jsonFile = dirname($filename) . '/' . $tag->jsonf;
-            print_r(json_decode(file_get_contents($jsonFile), TRUE));
+            $this->_handleOutputTag($filename, $tag);
         }
+    }
+
+    private function _handleInputTag($filename, InputTag $tag)
+    {
+        if ($tag->jsonf && $tag->jsons) {
+            throw Exception('jsons and jsonf can not both be set');
+        }
+
+        $jsonFile = dirname($filename) . '/' . $tag->jsonf;
+        print_r(json_decode(file_get_contents($jsonFile), TRUE));
+    }
+
+    private function _handleOutputTag($filename, OutputTag $tag)
+    {
+
     }
 
     public function getApiUrl($basecls, $methodName)
