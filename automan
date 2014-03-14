@@ -119,8 +119,6 @@ class Automan
                 throw Exception("invalid parsed result");
             }
 
-            print_r($api);
-
             if (!empty($api['io']['input'])) {
                 $curl = 'curl -G ' . $api['url'] . " -d '";
                 $curl .= 'class=' . $api['controller'];
