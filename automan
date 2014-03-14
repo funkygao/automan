@@ -15,6 +15,7 @@ class Automan
     const SERVICE = 'Services\\';
     const URL_BASE = 'http://dw.socialgamenet.com/api/index.php';
     const VERBOSE = FALSE;
+    const WEBMOCK_CONFIG = 'webmocker/automan.json';
     const TESTFILE = 'test.sh';
 
     private function _baseClassName($filename)
@@ -158,7 +159,10 @@ class Automan
 
     public function generateWebMockerConfig($parsedResult)
     {
-
+        $fp = fopen(self::WEBMOCK_CONFIG, 'w');
+        fwrite($fp, json_encode($parsedResult));
+        fclose($fp);
+        echo self::WEBMOCK_CONFIG, " genereted!" . PHP_EOL;
     }
 
 }
