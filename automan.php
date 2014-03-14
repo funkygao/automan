@@ -10,7 +10,7 @@ require_once 'bootstrap.php';
 
 function parsePhpFile($filename) {
     require_once $filename;
-    $basecls = substr($filename, 0, -strlen('.php'));
+    $basecls = substr(basename($filename), 0, -strlen('.php'));
     $clsname = 'Services\\' . $basecls;
     echo "Parsing class $clsname...\n";
 
@@ -26,9 +26,12 @@ function parsePhpFile($filename) {
                 continue;
             }
 
+            if ($tag instanceof InputTag) {
+                $jsonFile = dirname($filename) . '/' . $tag->jsonf;
+                print_r(json_decode(file_get_contents($jsonFile)));
+            } elseif ($tag instanceof OutputTag) {
 
-
-            print_r($tag);
+            }
         }
     }
 

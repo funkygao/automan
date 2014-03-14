@@ -1,0 +1,23 @@
+{
+    "_log_info": {
+        "ab": {
+            "farm": "b",
+            "pay": "b",
+            "quest": "a"
+        },
+        "callee": "POST+/+318a45ff",
+        "elapsed": 0.016543865203857,
+        "gender": "female",
+        "host": "172.31.7.188",
+        "ip": "58.114.150.207",
+        "level": 57,
+        "payment_cash": 91,
+        "script_id": 619233104,
+        "serial": 1,
+        "sid": 0,
+        "snsid": "100003534963938",
+        "uid": 4201045,
+        "uri": "/"
+    },
+    "uri": "/?a=%7B%22key%22%3A%22782dea49e6e43f2c8c861682dd0b950f%22%2C%22ident%22%3A%22coins%22%2C%22fuid%22%3A9500219%7D"
+}

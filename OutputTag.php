@@ -1,6 +1,6 @@
 <?php
 
-class InputTag extends Annotation {
+class OutputTag extends Annotation {
 
     /**
      * Input params in json format.
