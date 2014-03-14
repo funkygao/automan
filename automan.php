@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 /**
  * Automatically generate api doc according our customized phpdoc tags.
@@ -30,7 +31,8 @@ function parsePhpFile($filename) {
                 $jsonFile = dirname($filename) . '/' . $tag->jsonf;
                 print_r(json_decode(file_get_contents($jsonFile)));
             } elseif ($tag instanceof OutputTag) {
-
+                $jsonFile = dirname($filename) . '/' . $tag->jsonf;
+                print_r(json_decode(file_get_contents($jsonFile)));
             }
         }
     }

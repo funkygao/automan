@@ -3,10 +3,17 @@
 class InputTag extends Annotation {
 
     /**
-     * Input params in json format.
+     * Json file path.
      *
      * @var string
      */
     public $jsonf = '';
+
+    /**
+     * Json string.
+     *
+     * @var string
+     */
+    public $jsons = NULL;
 
 }
