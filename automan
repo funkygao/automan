@@ -14,6 +14,7 @@ class Automan
 {
     const SERVICE = 'Services\\';
     const HTTP_HOST = 'http://localhost';
+    const VERBOSE = FALSE;
 
     private function _baseClassName($filename)
     {
@@ -28,9 +29,9 @@ class Automan
     private function _handleAnnotationTag($filename, Annotation $tag)
     {
         if ($tag instanceof InputTag) {
-            $this->_handleInputTag($filename, $tag);
+            return $this->_handleInputTag($filename, $tag);
         } elseif ($tag instanceof OutputTag) {
-            $this->_handleOutputTag($filename, $tag);
+            return $this->_handleOutputTag($filename, $tag);
         }
     }
 
@@ -40,16 +41,26 @@ class Automan
             throw Exception('jsons and jsonf can not both be set');
         }
 
+        if ($tag->jsons) {
+            return array(
+                'input' => json_decode($tag->jsons, TRUE),
+            );
+        }
+
         $jsonFile = dirname($filename) . '/' . $tag->jsonf;
-        print_r(json_decode(file_get_contents($jsonFile), TRUE));
+        return array(
+            'input' => json_decode(file_get_contents($jsonFile), TRUE),
+        );
     }
 
     private function _handleOutputTag($filename, OutputTag $tag)
     {
-
+        return array(
+            'output' => '',
+        );
     }
 
-    public function getApiUrl($filename, ReflectionMethod $method)
+    private function _getApiUrl($filename, ReflectionMethod $method)
     {
         return self::HTTP_HOST . '/api/?class=' . $this->_baseClassName($filename)
             . '&method=' . $method->name
@@ -61,23 +72,45 @@ class Automan
         require_once $filename;
 
         $clsname = $this->_fullQualifiedClassName($filename);
-        echo "Parsing class $clsname..." . PHP_EOL;
+        if (self::VERBOSE) {
+            echo "Parsing class $clsname..." . PHP_EOL;
+        }
 
+        $ret = array(
+            'filename' => $filename,
+        );
         $reflection = new ReflectionClass($clsname);
+        // parse each method of the controller class
         foreach ($reflection->getMethods() as $method) {
-            echo $this->getApiUrl($filename, $method) . PHP_EOL;
-
+            // handle this controller action
             $p = new ReflectionAnnotatedMethod($method->class, $method->name);
-
+            $hasTag = FALSE;
+            $docs = array();
             foreach (array('InputTag', 'OutputTag') as $tagName) {
                 $tag = $p->getAnnotation($tagName);
                 if (!$tag) {
                     continue;
                 }
 
-                $this->_handleAnnotationTag($filename, $tag);
+                $hasTag = TRUE;
+                if ($res = $this->_handleAnnotationTag($filename, $tag)) {
+                    foreach ($res as $key => $val) {
+                        $docs[$key] = $val;
+                    }
+                }
+            }
+
+            if ($hasTag) {
+                $ret['api'][] = array(
+                    'controller' => $this->_baseClassName($filename),
+                    'action' => $method->name,
+                    'url' => $this->_getApiUrl($filename, $method),
+                    'io' => $docs,
+                );
             }
         }
+
+        return $ret;
     }
 }
 
@@ -100,7 +133,8 @@ function main() {
             continue;
         }
 
-        $man->parsePhpFile($filename);
+        $result = $man->parsePhpFile($filename);
+        print_r($result);
     }
 }
 
