@@ -13,7 +13,7 @@ require_once 'bootstrap.php';
 class Automan
 {
     const SERVICE = 'Services\\';
-    const URL_BASE = 'http://localhost/api/index.php';
+    const URL_BASE = 'http://dw.socialgamenet.com/api/index.php';
     const VERBOSE = FALSE;
     const TESTFILE = 'test.sh';
 
@@ -51,11 +51,18 @@ class Automan
         );
     }
 
+    private function _normalizedController($baseClassname) 
+    {
+        $slot = strlen('Service');
+        if (substr($baseClassname, -$slot) === 'Service') {
+            return substr($baseClassname, 0, -$slot);
+        }
+        return $baseClassname;
+    }
+
     private function _getApiUrl($filename, ReflectionMethod $method)
     {
-        $clsname = rtrim($this->_baseClassName($filename), 'Service');
-        return self::URL_BASE . '?class=' . $clsname
-            . '&method=' . $method->name;
+        return self::URL_BASE;
     }
 
     public function parsePhpFile($filename)
@@ -92,8 +99,9 @@ class Automan
             }
 
             if ($hasTag) {
+                $controller = $this->_normalizedController($this->_baseClassName($filename));
                 $ret['api'][] = array(
-                    'controller' => $this->_baseClassName($filename),
+                    'controller' => $controller,
                     'action' => $method->name,
                     'url' => $this->_getApiUrl($filename, $method),
                     'io' => $inputOutput,
@@ -111,11 +119,15 @@ class Automan
                 throw Exception("invalid parsed result");
             }
 
+            print_r($api);
+
             if (!empty($api['io']['input'])) {
                 $curl = 'curl -G ' . $api['url'] . " -d '";
+                $curl .= 'class=' . $api['controller'];
+                $curl .= '&method=' . $api['action'];
                 foreach ($api['io']['input'] as $name => $val) {
                     // TODO nested json tree
-                    $curl .= 'params[' . $name . ']=' . urlencode($val) . '&';
+                    $curl .= '&params[' . $name . ']=' . urlencode($val);
                 }
                 $curl .= "'";
                 echo $curl . PHP_EOL;
