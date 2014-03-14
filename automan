@@ -122,6 +122,30 @@ class Automan
 
     public function generateApiDoc($parsedResult)
     {
+        foreach ($parsedResult['api'] as $api) {
+            if (!is_array($api)) {
+                throw Exception("invalid parsed result");
+            }
+
+            echo str_repeat("=", 80) . PHP_EOL;
+            echo "\t\t" . $api['controller'] . ":" . $api['action'] . PHP_EOL;
+            echo str_repeat("=", 80) . PHP_EOL;
+            if (isset($api['io']['input'])) {
+                echo str_repeat('=>', 10) . " Input " . PHP_EOL;
+                print_r($api['io']['input']);
+            }
+            if (isset($api['io']['output'])) {
+                echo str_repeat('<=', 10) . " Output " . PHP_EOL;
+                print_r($api['io']['output']);
+            }
+
+
+            echo PHP_EOL;
+        }
+    }
+
+    public function generateWebServerConfig($parsedResult)
+    {
 
     }
 
@@ -149,6 +173,7 @@ function main() {
         $result = $man->parsePhpFile($filename);
         $man->generateTestScript($result);
         $man->generateApiDoc($result);
+        $man->generateWebServerConfig($result);
     }
 }
 
