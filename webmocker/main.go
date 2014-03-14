@@ -31,7 +31,7 @@ func main() {
 
 	for _, api := range loadConfig(CONFIG) {
 		path := fmt.Sprintf("/%s/%s", api.controller, api.action)
-		apis[path] = api
+		apis[path] = api // register into all api's
 		mock.RegisterHttpApi(path, func(w http.ResponseWriter, req *http.Request,
 			params map[string]interface{}) (interface{}, error) {
 			return handleHttpQuery(w, req, params)
