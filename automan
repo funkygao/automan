@@ -9,34 +9,60 @@
  */
 require_once 'bootstrap.php';
 
-function parsePhpFile($filename) {
-    require_once $filename;
-    $basecls = substr(basename($filename), 0, -strlen('.php'));
-    $clsname = 'Services\\' . $basecls;
-    echo "Parsing class $clsname...\n";
+class Automan
+{
+    const SERVICE = 'Services\\';
+    const HTTP_HOST = 'http://localhost';
 
-    $reflection = new ReflectionClass($clsname);
-    foreach ($reflection->getMethods() as $method) {
-        $p = new ReflectionAnnotatedMethod($method->class, $method->name);
-        $url = HTTP_HOST . '/api/?class=' . $basecls . '&method=' . $method->name . '&params=';
-        echo "URL: $url\n";
+    private function _baseClassName($filename)
+    {
+        return substr(basename($filename), 0, -strlen('.php'));
+    }
 
-        foreach (array('InputTag', 'OutputTag') as $tagName) {
-            $tag = $p->getAnnotation($tagName);
-            if (!$tag) {
-                continue;
-            }
+    private function _fullQualifiedClassName($filename)
+    {
+        return self::SERVICE . $this->_baseClassName($filename);
+    }
 
-            if ($tag instanceof InputTag) {
-                $jsonFile = dirname($filename) . '/' . $tag->jsonf;
-                print_r(json_decode(file_get_contents($jsonFile), TRUE));
-            } elseif ($tag instanceof OutputTag) {
-                $jsonFile = dirname($filename) . '/' . $tag->jsonf;
-                print_r(json_decode(file_get_contents($jsonFile), TRUE));
-            }
+    private function _handleAnnotationTag($filename, Annotation $tag)
+    {
+        if ($tag instanceof InputTag) {
+            $jsonFile = dirname($filename) . '/' . $tag->jsonf;
+            print_r(json_decode(file_get_contents($jsonFile), TRUE));
+        } elseif ($tag instanceof OutputTag) {
+            $jsonFile = dirname($filename) . '/' . $tag->jsonf;
+            print_r(json_decode(file_get_contents($jsonFile), TRUE));
         }
     }
 
+    public function getApiUrl($basecls, $methodName)
+    {
+        return self::HTTP_HOST . '/api/?class=' . $basecls
+            . '&method=' . $methodName
+            . '&params=';
+    }
+
+    public function parsePhpFile($filename)
+    {
+        require_once $filename;
+
+        $clsname = $this->_fullQualifiedClassName($filename);
+        echo "Parsing class $clsname...\n";
+
+        $reflection = new ReflectionClass($clsname);
+        foreach ($reflection->getMethods() as $method) {
+           $p = new ReflectionAnnotatedMethod($method->class, $method->name);
+
+           foreach (array('InputTag', 'OutputTag') as $tagName) {
+               $tag = $p->getAnnotation($tagName);
+               if (!$tag) {
+                   continue;
+               }
+
+               $this->_handleAnnotationTag($filename, $tag);
+           }
+       }
+    }
 }
 
 function showHelp() {
@@ -52,14 +78,14 @@ function main() {
         exit(0);
     }
 
+    $man = new Automan();
     foreach ($argv as $idx => $filename) {
         if ($idx == 0) {
             continue;
         }
-        parsePhpFile($filename);
+
+        $man->parsePhpFile($filename);
     }
 }
 
 main();
-
-
