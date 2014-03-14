@@ -49,10 +49,10 @@ class Automan
 
     }
 
-    public function getApiUrl($basecls, $methodName)
+    public function getApiUrl($filename, ReflectionMethod $method)
     {
-        return self::HTTP_HOST . '/api/?class=' . $basecls
-            . '&method=' . $methodName
+        return self::HTTP_HOST . '/api/?class=' . $this->_baseClassName($filename)
+            . '&method=' . $method->name
             . '&params=';
     }
 
@@ -61,21 +61,23 @@ class Automan
         require_once $filename;
 
         $clsname = $this->_fullQualifiedClassName($filename);
-        echo "Parsing class $clsname...\n";
+        echo "Parsing class $clsname..." . PHP_EOL;
 
         $reflection = new ReflectionClass($clsname);
         foreach ($reflection->getMethods() as $method) {
-           $p = new ReflectionAnnotatedMethod($method->class, $method->name);
+            echo $this->getApiUrl($filename, $method) . PHP_EOL;
 
-           foreach (array('InputTag', 'OutputTag') as $tagName) {
-               $tag = $p->getAnnotation($tagName);
-               if (!$tag) {
-                   continue;
-               }
+            $p = new ReflectionAnnotatedMethod($method->class, $method->name);
 
-               $this->_handleAnnotationTag($filename, $tag);
-           }
-       }
+            foreach (array('InputTag', 'OutputTag') as $tagName) {
+                $tag = $p->getAnnotation($tagName);
+                if (!$tag) {
+                    continue;
+                }
+
+                $this->_handleAnnotationTag($filename, $tag);
+            }
+        }
     }
 }
 
