@@ -16,4 +16,12 @@ class example {
             'status' => 'ok',
         );
     }
+
+    /**
+     * @InputTag(jsons='{uid=>3}')
+     * @param array $param
+     */
+    public function foo($param) {
+
+    }
 }
