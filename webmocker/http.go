@@ -5,6 +5,7 @@ import (
 	log "github.com/funkygao/log4go"
 	"io"
 	"net/http"
+	"net/url"
 )
 
 func handleHttpQuery(w http.ResponseWriter, req *http.Request,
@@ -16,8 +17,9 @@ func handleHttpQuery(w http.ResponseWriter, req *http.Request,
 		return nil, err
 	}
 
-	log.Debug("api: %+v", api)
-	log.Info("request: %+v, response: %+v", body, api.output)
+	uri, _ := url.Parse(req.RequestURI)
+	log.Info("request: {url:%s, body:%+v}", uri.Path, body)
+	log.Info("response: %+v", api.output)
 
 	return api.output, nil
 }
