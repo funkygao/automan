@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	conf "github.com/funkygao/jsconf"
 )
 
 const (
@@ -13,7 +12,6 @@ const (
 )
 
 var (
-	cf      *conf.Conf
 	apis    map[string]apiConfig // key is uri path
 	verbose bool
 

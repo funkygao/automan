@@ -25,8 +25,7 @@ func (this *apiConfig) loadConfig(section *conf.Conf) {
 }
 
 func loadConfig(fn string) (apis []apiConfig) {
-	var err error
-	cf, err = conf.Load(fn)
+	cf, err := conf.Load(fn)
 	if err != nil {
 		panic(err)
 	}
