@@ -114,7 +114,6 @@ class Automan
 
     public function generateTestScript($parsedResult)
     {
-        print_r($parsedResult);
         foreach ($parsedResult['api'] as $api) {
             if (!is_array($api)) {
                 throw Exception("invalid parsed result");
@@ -157,7 +156,7 @@ class Automan
         }
     }
 
-    public function generateWebServerConfig($parsedResult)
+    public function generateWebMockerConfig($parsedResult)
     {
 
     }
@@ -186,7 +185,7 @@ function main() {
         $result = $man->parsePhpFile($filename);
         $man->generateTestScript($result);
         $man->generateApiDoc($result);
-        $man->generateWebServerConfig($result);
+        $man->generateWebMockerConfig($result);
     }
 }
 
