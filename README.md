@@ -18,6 +18,7 @@ Features
 *   auto generate runnable backend integration test scripts
 *   auto generate web server that can reply to frontend request according to tags definition
     - generate runnable mock service
+    - generate mock data
 *   helps frontend/backend/PM all
     - parallel development
     - contract by auto generated doc
@@ -46,14 +47,14 @@ Workflow
            |  3. export generated api doc           |           |
            |--------------------------------------->|---------->|
            |                                        |           |
-           |                                        |           |
-           |-----+                                  |           |
-           |     |                                  |           |
-           |  4. | run generated test scripts       |           |
-           |     |                                  |           |
-           |<----+                                  |           |
-           |                                        |           |
-           |                                        |           |
+           |                                        |      
+           |-----+                                  |-----+
+           |     |                                  |     |
+           |  4. | run generated test scripts       |  4. | connect flash/Xcode to      
+           |     |                                  |     | mock server
+           |<----+                                  |<----+   
+           |                                        |        
+           |                                        |       
 
 
 Usage
