@@ -53,7 +53,8 @@ class Automan
 
     private function _getApiUrl($filename, ReflectionMethod $method)
     {
-        return self::URL_BASE . '?class=' . $this->_baseClassName($filename)
+        $clsname = rtrim($this->_baseClassName($filename), 'Service');
+        return self::URL_BASE . '?class=' . $clsname
             . '&method=' . $method->name;
     }
 
