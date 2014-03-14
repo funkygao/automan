@@ -1,7 +1,10 @@
 package main
 
 import (
-	"github.com/funkygao/fae/http"
+	"fmt"
+	mock "github.com/funkygao/fae/http"
+	log "github.com/funkygao/log4go"
+	"net/http"
 )
 
 const (
@@ -11,12 +14,22 @@ const (
 )
 
 func main() {
-	loadConfig(CONFIG)
+	cf := loadConfig(CONFIG)
 
-	if err := http.LaunchHttpServ(LISTEN_ADDR, DEBUG_ADDR); err != nil {
+	if err := mock.LaunchHttpServ(LISTEN_ADDR, DEBUG_ADDR); err != nil {
 		panic(err)
 	}
-	defer http.StopHttpServ()
+	defer mock.StopHttpServ()
+
+	for _, api := range cf {
+		path := fmt.Sprintf("/%s/%s", api.controller, api.action)
+		mock.RegisterHttpApi(path, func(w http.ResponseWriter, req *http.Request,
+			params map[string]interface{}) (interface{}, error) {
+			return handleHttpQuery(w, req, params)
+		}).Methods("GET", "POST")
+
+		log.Debug("uri: %s", path)
+	}
 
 	select {}
 }
