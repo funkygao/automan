@@ -110,13 +110,15 @@ class Automan
                 throw Exception("invalid parsed result");
             }
 
-            $curl = 'curl -G ' . $api['url'] . " -d '";
-            foreach ($api['io']['input'] as $name => $val) {
-                // TODO nested json tree
-                $curl .= 'params[' . $name . ']=' . urlencode($val) . '&';
+            if (!empty($api['io']['input'])) {
+                $curl = 'curl -G ' . $api['url'] . " -d '";
+                foreach ($api['io']['input'] as $name => $val) {
+                    // TODO nested json tree
+                    $curl .= 'params[' . $name . ']=' . urlencode($val) . '&';
+                }
+                $curl .= "'";
+                echo $curl . PHP_EOL;
             }
-            $curl .= "'";
-            echo $curl . PHP_EOL;
         }
     }
 
@@ -130,15 +132,14 @@ class Automan
             echo str_repeat("=", 80) . PHP_EOL;
             echo "\t\t" . $api['controller'] . ":" . $api['action'] . PHP_EOL;
             echo str_repeat("=", 80) . PHP_EOL;
-            if (isset($api['io']['input'])) {
+            if (!empty($api['io']['input'])) {
                 echo str_repeat('=>', 10) . " Input " . PHP_EOL;
                 print_r($api['io']['input']);
             }
-            if (isset($api['io']['output'])) {
+            if (!empty($api['io']['output'])) {
                 echo str_repeat('<=', 10) . " Output " . PHP_EOL;
                 print_r($api['io']['output']);
             }
-
 
             echo PHP_EOL;
         }
