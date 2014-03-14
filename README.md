@@ -64,6 +64,7 @@ Usage
     
         /**
          * Input/Output is referenced by external file.
+         * Cause its values starts with '@'.
          *
          * @In('@json/hello.i.json')
          * @Out('@json/hello.o.json')
