@@ -39,7 +39,7 @@ Workflow
            |-----+                                  |           |
            |     |                                  |           |
            |  2. | write php skeleton               |           |
-           |     | @input/@output tags              |           |
+           |     | with @In/@Out tags               |           |
            |     |                                  |           |
            |<----+                                  |           |
            |                                        |           |
@@ -63,10 +63,10 @@ Usage
     class UserService {
     
         /**
-         * input/output is referenced by external file.
+         * Input/Output is referenced by external file.
          *
-         * @InputTag(json='@json/hello.i.json')
-         * @OutputTag(json='@json/hello.o.json')
+         * @In('@json/hello.i.json')
+         * @Out('@json/hello.o.json')
          */
         public function helloWorld($param) {
             return array(
@@ -76,7 +76,7 @@ Usage
         }
     
         /**
-         * @InputTag(json='{"uid":3}')
+         * @In('{"uid":3}')
          */
         public function foo($param) {
         }
