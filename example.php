@@ -1,11 +1,11 @@
 <?php
 
-namespace Service;
+namespace Services;
 
 class example {
 
     /**
-     * @InputTag()
+     * @InputTag(value='hello')
      * @param array $param
      * @return array
      */

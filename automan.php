@@ -1,36 +1,57 @@
 <?php
 /**
- * Automat
+ * Automatically generate api doc according our customized phpdoc tags.
+ *
+ * Currently supported tags:
+ * InputTag
+ * OutputTag
  */
 require_once 'bootstrap.php';
 
-$src = '/Users/gaopeng/fun/dragon-server-code/v2/classes/Services/AccountService.php';
-require_once $src;
-
-function parseFile($filename) {
+function parsePhpFile($filename) {
     require_once $filename;
-    $clsname = 'Services\\' . substr($filename, 0, -strlen('.php'));
-    echo $clsname;
+    $basecls = substr($filename, 0, -strlen('.php'));
+    $clsname = 'Services\\' . $basecls;
+    echo "Parsing class $clsname...\n";
 
     $reflection = new ReflectionClass($clsname);
     foreach ($reflection->getMethods() as $method) {
         $p = new ReflectionAnnotatedMethod($method->class, $method->name);
-        $inputTag = $p->getAnnotation("InputTag");
-        if (!$inputTag) {
-            continue;
+        $url = '/api/?class=' . $basecls . '&method=' . $method->name . '&params=';
+        echo "URL: $url\n";
+
+        foreach (array('InputTag', 'OutputTag') as $tagName) {
+            $tag = $p->getAnnotation($tagName);
+            if (!$tag) {
+                continue;
+            }
+
+
+
+            print_r($tag);
         }
-
-        print_r($inputTag);
-        continue;
-
-        print_r($p->getAnnotations());
-        foreach ($p->getAllAnnotations() as $a) {
-            print_r($a);
-
-        }
-        //echo $p->getDocComment();
     }
 
 }
+
+function showHelp() {
+    echo "Usage: " . $argv[0] . " filename [filename]\n";
+    //exit(0);
+}
+
+function main() {
+    ini_set('register_argc_argv', true);
+    if (count($argv) == 0) {
+        showHelp();
+    }
+
+    foreach ($argv as $filename) {
+        parsePhpFile($filename);
+    }
+
+    parsePhpFile('example.php');
+}
+
+main();
 
 
