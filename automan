@@ -37,26 +37,16 @@ class Automan
 
     private function _handleInputTag($filename, InputTag $tag)
     {
-        if ($tag->jsonf && $tag->jsons) {
-            throw Exception('jsons and jsonf can not both be set');
-        }
-
-        if ($tag->jsons) {
-            return array(
-                'input' => json_decode($tag->jsons, TRUE),
-            );
-        }
-
-        $jsonFile = dirname($filename) . '/' . $tag->jsonf;
         return array(
-            'input' => json_decode(file_get_contents($jsonFile), TRUE),
+            'input' => $tag->getJsonArray($filename),
         );
+
     }
 
     private function _handleOutputTag($filename, OutputTag $tag)
     {
         return array(
-            'output' => '',
+            'output' => $tag->getJsonArray($filename),
         );
     }
 
