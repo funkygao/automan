@@ -25,8 +25,8 @@ Features
     - better readability
 
 
-Usage
-=====
+Workflow
+========
 
         BackendDeveloper                FrontendDeveloper       PM
         ----------------                -----------------       --
@@ -54,4 +54,29 @@ Usage
            |                                        |           |
            |                                        |           |
 
+
+Usage
+=====
+
+    class UserService {
+    
+        /**
+         * input/output is referenced by external file.
+         *
+         * @InputTag(json='@json/hello.i.json')
+         * @OutputTag(json='@json/hello.o.json')
+         */
+        public function helloWorld($param) {
+            return array(
+                'uid' => 5,
+                'status' => 'ok',
+            );
+        }
+    
+        /**
+         * @InputTag(json='{"uid":3}')
+         */
+        public function foo($param) {
+        }
+    }
 
