@@ -77,6 +77,8 @@ Usage
         }
     
         /**
+         * Raw json string.
+         *
          * @In('{"uid":3}')
          */
         public function foo($param) {
