@@ -25,7 +25,7 @@ func main() {
 		path := fmt.Sprintf("/%s/%s", api.controller, api.action)
 		mock.RegisterHttpApi(path, func(w http.ResponseWriter, req *http.Request,
 			params map[string]interface{}) (interface{}, error) {
-			return handleHttpQuery(w, req, params)
+			return handleHttpQuery(w, req, params, api)
 		}).Methods("GET", "POST")
 
 		log.Debug("uri: %s", path)

@@ -28,7 +28,7 @@ func (this *apiConfig) loadConfig(section *conf.Conf) {
 	this.output = io.Object("output", nil)
 }
 
-func loadConfig(fn string) (apis []*apiConfig) {
+func loadConfig(fn string) (apis []apiConfig) {
 	var err error
 	cf, err = conf.Load(fn)
 	if err != nil {
@@ -41,11 +41,11 @@ func loadConfig(fn string) (apis []*apiConfig) {
 			panic(err)
 		}
 
-		apiInfo := new(apiConfig)
+		apiInfo := apiConfig{}
 		apiInfo.loadConfig(section)
 		apis = append(apis, apiInfo)
 
-		log.Debug("api: %+v", *apiInfo)
+		log.Debug("api: %+v", apiInfo)
 	}
 
 	return
