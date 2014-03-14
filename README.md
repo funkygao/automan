@@ -1,7 +1,7 @@
 automan
 =======
 
-Auto generate api doc for backend/frontend developpers for collaboration.
+Auto generate api doc for backend/frontend developpers for loosely coupled collaboration.
     
                    __                                
     _____   __ ___/  |_  ____   _____ _____    ____  
