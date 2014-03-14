@@ -17,7 +17,7 @@ function parsePhpFile($filename) {
     $reflection = new ReflectionClass($clsname);
     foreach ($reflection->getMethods() as $method) {
         $p = new ReflectionAnnotatedMethod($method->class, $method->name);
-        $url = '/api/?class=' . $basecls . '&method=' . $method->name . '&params=';
+        $url = HTTP_HOST . '/api/?class=' . $basecls . '&method=' . $method->name . '&params=';
         echo "URL: $url\n";
 
         foreach (array('InputTag', 'OutputTag') as $tagName) {
@@ -35,21 +35,24 @@ function parsePhpFile($filename) {
 }
 
 function showHelp() {
+    global $argv;
     echo "Usage: " . $argv[0] . " filename [filename]\n";
-    //exit(0);
 }
 
 function main() {
-    ini_set('register_argc_argv', true);
-    if (count($argv) == 0) {
+    global $argv;
+    ini_set('register_argc_argv', 'On');
+    if (count($argv) == 1) {
         showHelp();
+        exit(0);
     }
 
-    foreach ($argv as $filename) {
+    foreach ($argv as $idx => $filename) {
+        if ($idx == 0) {
+            continue;
+        }
         parsePhpFile($filename);
     }
-
-    parsePhpFile('example.php');
 }
 
 main();
