@@ -13,8 +13,9 @@ require_once 'bootstrap.php';
 class Automan
 {
     const SERVICE = 'Services\\';
-    const HTTP_HOST = 'http://localhost';
+    const URL_BASE = 'http://localhost/api/index.php';
     const VERBOSE = FALSE;
+    const TESTFILE = 'test.sh';
 
     private function _baseClassName($filename)
     {
@@ -52,9 +53,8 @@ class Automan
 
     private function _getApiUrl($filename, ReflectionMethod $method)
     {
-        return self::HTTP_HOST . '/api/?class=' . $this->_baseClassName($filename)
-            . '&method=' . $method->name
-            . '&params=';
+        return self::URL_BASE . '?class=' . $this->_baseClassName($filename)
+            . '&method=' . $method->name;
     }
 
     public function parsePhpFile($filename)
@@ -105,7 +105,11 @@ class Automan
 
     public function generateTestScript($parsedResult)
     {
-
+        foreach ($parsedResult['api'] as $api) {
+            $curl = 'curl -G ' . $api['url'] . " -d '";
+            $curl .= "'";
+            echo $curl . PHP_EOL;
+        }
     }
 
     public function generateApiDoc($parsedResult)
