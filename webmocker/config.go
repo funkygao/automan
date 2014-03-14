@@ -6,10 +6,6 @@ import (
 	log "github.com/funkygao/log4go"
 )
 
-var (
-	cf *conf.Conf
-)
-
 type apiConfig struct {
 	controller string
 	action     string

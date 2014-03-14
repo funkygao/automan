@@ -1,19 +1,20 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	mock "github.com/funkygao/fae/http"
 	log "github.com/funkygao/log4go"
 	"net/http"
 )
 
-const (
-	LISTEN_ADDR = ":9001"
-	DEBUG_ADDR  = ":9002"
-	CONFIG      = "automan.json"
-)
-
 func main() {
+	flag.BoolVar(&verbose, "v", false, "verbose")
+	flag.Parse()
+	if !verbose {
+		log.AddFilter("stdout", log.INFO, log.NewConsoleLogWriter())
+	}
+
 	cf := loadConfig(CONFIG)
 
 	if err := mock.LaunchHttpServ(LISTEN_ADDR, DEBUG_ADDR); err != nil {
@@ -28,7 +29,7 @@ func main() {
 			return handleHttpQuery(w, req, params, api)
 		}).Methods("GET", "POST")
 
-		log.Debug("uri: %s", path)
+		log.Debug("registered uri: %s", path)
 	}
 
 	select {}
