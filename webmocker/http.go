@@ -18,7 +18,7 @@ func handleHttpQuery(w http.ResponseWriter, req *http.Request,
 	}
 
 	uri, _ := url.Parse(req.RequestURI)
-	log.Info("request: {url:%s, body:%+v}", uri.Path, body)
+	log.Info("request: %s {url:%s, body:%+v}", req.Method, uri.Path, body)
 	api, ok := apis[uri.Path]
 	if !ok {
 		return nil, ErrNotFound
