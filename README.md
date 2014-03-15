@@ -60,6 +60,8 @@ Workflow
 Usage
 =====
 
+Modify bootstrap.php before you use automan.
+
     class UserService {
     
         /**

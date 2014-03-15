@@ -7,8 +7,8 @@ require_once 'bootstrap.php';
  * Automatically generate api doc according our customized phpdoc tags.
  *
  * Currently supported tags:
- * InputTag
- * OutputTag
+ * @In
+ * @Out
  */
 class Automan
 {
