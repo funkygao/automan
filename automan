@@ -14,7 +14,7 @@ class Automan
 {
     const SERVICE = 'Services\\';
     const URL_BASE = 'http://dw.socialgamenet.com/api/index.php';
-    const URL_WEB_MOCK = 'http://localhost:9002/';
+    const URL_WEB_MOCK = 'http://localhost:9002';
     const VERBOSE = FALSE;
     const WEBMOCK_CONFIG = 'webmocker/automan.json';
     const TESTFILE = 'test.sh';
@@ -114,7 +114,31 @@ class Automan
         return $ret;
     }
 
-    public function generateTestScript($parsedResult)
+    public function generateFrontendTestScript($parsedResult)
+    {
+        foreach ($parsedResult['api'] as $api) {
+            if (!is_array($api)) {
+                throw Exception("invalid parsed result");
+            }
+
+            if (!empty($api['io']['input'])) {
+                $callAddr = 'curl ' . self::URL_WEB_MOCK . '/'
+                    . $api['controller']
+                    . '/'
+                    . $api['action']
+                    . " -d '"
+                ;
+                foreach ($api['io']['input'] as $name => $val) {
+                    // TODO nested json tree
+                    $callAddr .= '&params[' . $name . ']=' . urlencode($val);
+                }
+                $callAddr .= "'";
+                echo $callAddr . PHP_EOL;
+            }
+        }
+    }
+
+    public function generateBackendTestScript($parsedResult)
     {
         foreach ($parsedResult['api'] as $api) {
             if (!is_array($api)) {
@@ -189,7 +213,8 @@ function main() {
         }
 
         $result = $man->parsePhpFile($filename);
-        $man->generateTestScript($result);
+        $man->generateBackendTestScript($result);
+        $man->generateFrontendTestScript($result);
         $man->generateApiDoc($result);
         $man->generateWebMockerData($result);
     }
