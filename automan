@@ -14,7 +14,7 @@ class Automan
 {
     const SERVICE = 'Services\\';
     const URL_BASE = 'http://dw.socialgamenet.com/api/index.php';
-    const URL_WEB_MOCK = 'http://localhost:9002';
+    const URL_WEB_MOCK = 'http://localhost:9001';
     const VERBOSE = FALSE;
     const WEBMOCK_CONFIG = 'webmocker/automan.json';
     const TESTFILE = 'test.sh';
@@ -123,16 +123,16 @@ class Automan
             }
 
             if (!empty($api['io']['input'])) {
-                $callAddr = 'curl ' . self::URL_WEB_MOCK . '/'
+                $callAddr = 'curl -G ' . self::URL_WEB_MOCK . '/'
                     . $api['controller']
                     . '/'
                     . $api['action']
-                    . " -d '"
-                ;
+                    . " -d '";
                 foreach ($api['io']['input'] as $name => $val) {
                     // TODO nested json tree
-                    $callAddr .= '&params[' . $name . ']=' . urlencode($val);
+                    $callAddr .= 'params[' . $name . ']=' . urlencode($val) . '&';
                 }
+                $callAddr = rtrim($callAddr, '&');
                 $callAddr .= "'";
                 echo $callAddr . PHP_EOL;
             }
