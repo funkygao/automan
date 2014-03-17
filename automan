@@ -213,6 +213,10 @@ function main() {
         }
 
         $result = $man->parsePhpFile($filename);
+        if (empty($result['api'])) {
+            echo "Found no @In/@Out tags!" . PHP_EOL;
+            return;
+        }
         $man->generateBackendTestScript($result);
         $man->generateFrontendTestScript($result);
         $man->generateApiDoc($result);
