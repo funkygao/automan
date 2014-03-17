@@ -116,6 +116,7 @@ class Automan
 
     public function generateFrontendTestScript($parsedResult)
     {
+        echo str_repeat("#", 10) . ' Frontend TEST ' . str_repeat("#", 10) . PHP_EOL;
         foreach ($parsedResult['api'] as $api) {
             if (!is_array($api)) {
                 throw Exception("invalid parsed result");
@@ -136,10 +137,12 @@ class Automan
                 echo $callAddr . PHP_EOL;
             }
         }
+        echo PHP_EOL;
     }
 
     public function generateBackendTestScript($parsedResult)
     {
+        echo str_repeat("#", 10) . ' Backend TEST ' . str_repeat("#", 10) . PHP_EOL;
         foreach ($parsedResult['api'] as $api) {
             if (!is_array($api)) {
                 throw Exception("invalid parsed result");
@@ -157,6 +160,7 @@ class Automan
                 echo $curl . PHP_EOL;
             }
         }
+        echo PHP_EOL;
     }
 
     public function generateApiDoc($parsedResult)
