@@ -60,7 +60,8 @@ Workflow
 Usage
 =====
 
-Modify bootstrap.php before you use automan.
+
+### 1. php integration
 
     class UserService {
     
@@ -87,3 +88,11 @@ Modify bootstrap.php before you use automan.
         }
     }
 
+### 2. generate stub/mock
+
+    Modify bootstrap.php before you use automan.
+
+    ./webmocker/webmocker  # this is the dumb web server for mock services
+    ./automan ${your_php_controller_file_path}
+
+    e.g, ./automan /Users/gaopeng/fun/dragon-server-code/v2/classes/Services/AccountService.php
