@@ -4,14 +4,11 @@ import (
 	"flag"
 	"fmt"
 	mock "github.com/funkygao/fae/http"
+	"github.com/funkygao/golib/signal"
 	log "github.com/funkygao/log4go"
-	"net/http"
 	"os"
+	"syscall"
 )
-
-func init() {
-	apis = make(map[string]apiConfig)
-}
 
 func main() {
 	flag.BoolVar(&verbose, "v", false, "verbose")
@@ -29,16 +26,8 @@ func main() {
 	}
 	defer mock.StopHttpServ()
 
-	for _, api := range loadConfig(CONFIG) {
-		path := fmt.Sprintf("/%s/%s", api.controller, api.action)
-		apis[path] = api // register into all api's
-		mock.RegisterHttpApi(path, func(w http.ResponseWriter, req *http.Request,
-			params map[string]interface{}) (interface{}, error) {
-			return handleHttpQuery(w, req, params)
-		}).Methods("GET", "POST")
-
-		log.Debug("registered uri: %s", path)
-	}
+	signal.RegisterSignalHandler(syscall.SIGHUP, registerHttpApi)
+	signal.Kill(syscall.SIGHUP)
 
 	select {}
 }
