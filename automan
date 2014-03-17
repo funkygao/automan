@@ -14,6 +14,7 @@ class Automan
 {
     const SERVICE = 'Services\\';
     const URL_BASE = 'http://dw.socialgamenet.com/api/index.php';
+    const URL_WEB_MOCK = 'http://localhost:9002/';
     const VERBOSE = FALSE;
     const WEBMOCK_CONFIG = 'webmocker/automan.json';
     const TESTFILE = 'test.sh';
