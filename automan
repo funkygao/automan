@@ -221,6 +221,7 @@ function main() {
             echo "Found no @In/@Out tags!" . PHP_EOL;
             return;
         }
+
         $man->generateBackendTestScript($result);
         $man->generateFrontendTestScript($result);
         $man->generateApiDoc($result);
