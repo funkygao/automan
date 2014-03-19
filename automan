@@ -143,6 +143,7 @@ class Automan
     public function generateBackendTestScript($parsedResult)
     {
         echo str_repeat("#", 10) . ' Backend TEST ' . str_repeat("#", 10) . PHP_EOL;
+        $script = '';
         foreach ($parsedResult['api'] as $api) {
             if (!is_array($api)) {
                 throw Exception("invalid parsed result");
@@ -157,10 +158,14 @@ class Automan
                     $curl .= '&params[' . $name . ']=' . urlencode($val);
                 }
                 $curl .= "'";
+                $script .= $curl . PHP_EOL;
+                $script .= 'echo' . PHP_EOL;
                 echo $curl . PHP_EOL;
             }
         }
         echo PHP_EOL;
+        file_put_contents(self::TESTFILE, $script);
+        echo self::TESTFILE . ' generated!' . PHP_EOL;
     }
 
     public function generateApiDoc($parsedResult)
