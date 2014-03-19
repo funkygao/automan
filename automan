@@ -198,6 +198,8 @@ class Automan
         fwrite($fp, json_encode($parsedResult, JSON_PRETTY_PRINT));
         fclose($fp);
         echo self::WEBMOCK_CONFIG, " genereted!" . PHP_EOL;
+        $reloadWebMocker = "kill -HUP `pgrep webmocker`";
+        `$reloadWebMocker`;
     }
 
 }
