@@ -17,7 +17,12 @@ class JsonTag extends Annotation
             $this->value = file_get_contents($jsonFile);
         }
 
-        return json_decode($this->value, TRUE);
+        $arr = json_decode($this->value, TRUE);
+        if (is_array($arr)) {
+            return $arr;
+        } else {
+            return $this->value;
+        }
     }
 
 }
