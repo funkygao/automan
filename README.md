@@ -92,7 +92,7 @@ Usage
 
     MODIFY bootstrap.php before you use automan.
 
-    nohup ./webmocker/webmocker&  # this is the dumb web server for mock services
+    nohup ./webmocker/webmocker&               # this is the dumb web server for mock services
     ./automan ${your_php_controller_file_path} # auto kill -HUP webmocker; auto generate test.sh
 
     e.g, ./automan /Users/gaopeng/fun/dragon-server-code/v2/classes/Services/AccountService.php
