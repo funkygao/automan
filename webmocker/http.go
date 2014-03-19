@@ -25,9 +25,39 @@ func registerHttpApi(sig os.Signal) {
 			params map[string]interface{}) (interface{}, error) {
 			return handleHttpQuery(w, req, params)
 		}).Methods("GET", "POST")
+		mock.RegisterHttpApi(path+"/h", func(w http.ResponseWriter, req *http.Request,
+			params map[string]interface{}) (interface{}, error) {
+			return handleHttpQueryHelp(w, req, params)
+		}).Methods("GET")
 
 		log.Debug("registered uri: %s", path)
 	}
+
+	mock.RegisterHttpApi("/s", func(w http.ResponseWriter, req *http.Request,
+		params map[string]interface{}) (interface{}, error) {
+		return handleServiceFind(w, req, params)
+	}).Methods("GET")
+}
+
+func handleServiceFind(w http.ResponseWriter, req *http.Request,
+	params map[string]interface{}) (interface{}, error) {
+	return apis, nil
+}
+
+func handleHttpQueryHelp(w http.ResponseWriter, req *http.Request,
+	params map[string]interface{}) (interface{}, error) {
+	uri, _ := url.Parse(req.RequestURI)
+	path := uri.Path[:len(uri.Path)-2]
+	api, ok := apis[path]
+	if !ok {
+		return nil, ErrNotFound
+	}
+
+	output := make(map[string]interface{})
+	output["in"] = api.input
+	output["out"] = api.output
+
+	return output, nil
 }
 
 func handleHttpQuery(w http.ResponseWriter, req *http.Request,
