@@ -8,3 +8,4 @@ app/[Cc]onfig/database.php
 .idea/
 automan.json
 test.sh
+nohup.out
