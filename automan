@@ -177,52 +177,12 @@ class Automan
         }
 
         `mkdir -p output`;
-        \Utils\TemplateEngine::set(new Mustache_Engine(array(
-            'cache' => '/tmp/',
-            'cache_file_mode' => 0666,
-            'loader' => new Mustache_Loader_FilesystemLoader('template/'),
-            'partials_loader' => new Mustache_Loader_FilesystemLoader('template/Partials/'),
-            'helpers' => array('i18n' => function($text) {
-            }),
-            'escape' => function($value) {
-                return htmlspecialchars($value, ENT_COMPAT, 'utf-8');
-            },
-                'charset' => 'ISO88591',
-                'logger' => new Mustache_Logger_StreamLogger('php://stderr'),
-                'strict_callables' => true,
-            )));
-        $html = \Utils\TemplateEngine::fetch('automan', 
-            array(
-                'api' => $parsedResult['api'], 
-                'assets' => self::ASSETS_BASE, 
-                'ngName'=>'ApiExplorerModule',
-                'title' => 'ApiDoc',
-            )
-        );
+        ob_start();
+        include 'apidoc.php';
+        $html = ob_get_contents();
+        ob_end_clean();
         file_put_contents(self::APIFILE, $html);
         echo self::APIFILE . ' generated!' . PHP_EOL;
-
-        return;
-        foreach ($parsedResult['api'] as $api) {
-            if (!is_array($api)) {
-                throw Exception("invalid parsed result");
-            }
-
-            echo str_repeat("*", 60) . PHP_EOL;
-            echo "\t\t" . $api['controller'] . ":" . $api['action'] . PHP_EOL;
-            echo str_repeat("*", 60) . PHP_EOL;
-            if (!empty($api['io']['input'])) {
-                echo str_repeat('=', 10) . "> Input " . PHP_EOL;
-                echo json_encode($api['io']['input'], JSON_PRETTY_PRINT), PHP_EOL;
-            }
-            echo PHP_EOL;
-            if (!empty($api['io']['output'])) {
-                echo '<' . str_repeat('=', 10) . " Output " . PHP_EOL;
-                echo json_encode($api['io']['output'], JSON_PRETTY_PRINT), PHP_EOL;
-            }
-
-            echo PHP_EOL;
-        }
     }
 
     public function generateWebMockerData($parsedResult)
