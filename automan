@@ -227,6 +227,7 @@ function main() {
         $man->generateFrontendTestScript($result);
         $man->generateApiDoc($result);
         $man->generateWebMockerData($result);
+        `phpdoc -f $filename`;
     }
 }
 
