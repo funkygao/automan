@@ -187,6 +187,7 @@ class Automan
 
     public function generateWebMockerData($parsedResult)
     {
+        `mkdir -p webmocker`;
         $fp = fopen(self::WEBMOCK_CONFIG, 'w');
         fwrite($fp, json_encode($parsedResult, JSON_PRETTY_PRINT));
         fclose($fp);
