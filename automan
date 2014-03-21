@@ -195,7 +195,7 @@ class Automan
             array(
                 'api' => $parsedResult['api'], 
                 'assets' => self::ASSETS_BASE, 
-                'ngName'=>'ApiDoc',
+                'ngName'=>'ApiExplorerModule',
                 'title' => 'ApiDoc',
             )
         );
