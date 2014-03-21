@@ -13,11 +13,13 @@ require_once 'bootstrap.php';
 class Automan
 {
     const SERVICE = 'Services\\';
+    const ASSETS_BASE = 'http://dw.socialgamenet.com/';
     const URL_BASE = 'http://dw.socialgamenet.com/api/index.php';
     const URL_WEB_MOCK = 'http://localhost:9001';
     const VERBOSE = FALSE;
     const WEBMOCK_CONFIG = 'webmocker/automan.json';
     const TESTFILE = 'test.sh';
+    const APIFILE = 'output/automan.html';
 
     private function _baseClassName($filename)
     {
@@ -170,6 +172,37 @@ class Automan
 
     public function generateApiDoc($parsedResult)
     {
+        if (empty($parsedResult['api'])) {
+            return;
+        }
+
+        `mkdir -p output`;
+        \Utils\TemplateEngine::set(new Mustache_Engine(array(
+            'cache' => '/tmp/',
+            'cache_file_mode' => 0666,
+            'loader' => new Mustache_Loader_FilesystemLoader('template/'),
+            'partials_loader' => new Mustache_Loader_FilesystemLoader('template/Partials/'),
+            'helpers' => array('i18n' => function($text) {
+            }),
+            'escape' => function($value) {
+                return htmlspecialchars($value, ENT_COMPAT, 'utf-8');
+            },
+                'charset' => 'ISO88591',
+                'logger' => new Mustache_Logger_StreamLogger('php://stderr'),
+                'strict_callables' => true,
+            )));
+        $html = \Utils\TemplateEngine::fetch('automan', 
+            array(
+                'api' => $parsedResult['api'], 
+                'assets' => self::ASSETS_BASE, 
+                'ngName'=>'ApiDoc',
+                'title' => 'ApiDoc',
+            )
+        );
+        file_put_contents(self::APIFILE, $html);
+        echo self::APIFILE . ' generated!' . PHP_EOL;
+
+        return;
         foreach ($parsedResult['api'] as $api) {
             if (!is_array($api)) {
                 throw Exception("invalid parsed result");
