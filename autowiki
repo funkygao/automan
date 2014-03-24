@@ -17,12 +17,16 @@ def wikitag(line):
     return '{code:JavaScript}' + json.dumps(js, indent=4) + '{code}'
 
 def wiki_content(fn):
+    ''' -> title, content'''
     n = 0
+    title = ''
     content = 'The following content is genereated by automan\n\n'
     for line in open(fn):
         if n == 0:
             # title
             content += line
+            if title == '':
+                title = line.split(':')[0] + 'Service'
         elif n == 1:
             # input json
             content += 'Request:\n'
@@ -34,15 +38,16 @@ def wiki_content(fn):
         n += 1
         n %= 3
 
-    return content
+    return title, content
 
 def main():
     cf = Confluence(url=URL, username=USER, password=PASS)
-    ok = cf.storePageContent('test auto wiki', SPACE, wiki_content(sys.argv[1]))
+    pageTitle, pageContent = wiki_content(sys.argv[1])
+    ok = cf.storePageContent(pageTitle, SPACE, pageContent)
     if ok:
-        print 'feed wiki ok'
+        print 'feed wiki[%s] ok' % pageTitle
     else:
-        print 'feed wiki fail'
+        print 'feed wiki[%s] fail' % pageTitle
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
