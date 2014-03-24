@@ -96,3 +96,8 @@ Usage
     ./automan ${your_php_controller_file_path} # auto kill -HUP webmocker; auto generate test.sh
 
     e.g, ./automan /Users/gaopeng/fun/dragon-server-code/v2/classes/Services/AccountService.php
+
+### 3. integration with conflucnece rest api
+
+    curl -u admin:admin -X PUT -H 'Content-Type: application/json' -d'{"id":"3604482","type":"page","title":"new page","space":{"key":"TST"},"body":{"storage":{"value":"<p>This is the updated text for the new page</p>","representation":"storage"}},"version":{"number":2}}' http://localhost:8080/confluence/rest/api/content/3604482 | python -mjson.tool
+
