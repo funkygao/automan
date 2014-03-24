@@ -5,6 +5,8 @@ namespace Services;
 class example {
 
     /**
+     *
+     * @Spec('http://wiki.mycorp.com/display/DG/test+auto+wiki')
      * @In('@json/hello.i.json')
      * @Out('@json/hello.o.json')
      * @param array $param
@@ -18,7 +20,9 @@ class example {
     }
 
     /**
+     *
      * @In('{"uid":3}')
+     * @Out('{"status":"ok","time":139343434,"msg":"good"}')
      * @param array $param
      */
     public function foo($param) {
