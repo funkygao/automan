@@ -19,7 +19,7 @@ class Automan
     const VERBOSE = FALSE;
     const WEBMOCK_CONFIG = 'webmocker/automan.json';
     const TESTFILE = 'test.sh';
-    const APIFILE = 'output/automan.html';
+    const APIFILE = 'output/automan.api';
 
     private function _baseClassName($filename)
     {
@@ -176,12 +176,15 @@ class Automan
             return;
         }
 
+        $doc = '';
+        foreach($parsedResult['api'] as $api) {
+            $doc .= $api['controller'] . '::' . $api['action'] . PHP_EOL;
+            $doc .= json_encode($api['io']['input']) . PHP_EOL;
+            $doc .= json_encode($api['io']['output']) . PHP_EOL;
+        }
+
         `mkdir -p output`;
-        ob_start();
-        include 'apidoc.php';
-        $html = ob_get_contents();
-        ob_end_clean();
-        file_put_contents(self::APIFILE, $html);
+        file_put_contents(self::APIFILE, $doc);
         echo self::APIFILE . ' generated!' . PHP_EOL;
     }
 
