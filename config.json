@@ -1,0 +1,9 @@
+{
+    "bootstrap": "/Users/gaopeng/fun/dragon-server-code/v2/init.php",
+    "wiki": {
+        "url": "http://wiki.mycorp.cn/",
+        "space": "DG",
+        "username": "peng.gao",
+        "password": "xxx"
+    }
+}

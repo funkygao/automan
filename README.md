@@ -46,7 +46,7 @@ Workflow
            |                                        |           |
            |  3. export generated api doc           |           |
            |--------------------------------------->|---------->|
-           |                                        |           |
+           |     wiki                               |           |
            |                                        |      
            |-----+                                  |-----+
            |     |                                  |     |
@@ -69,6 +69,7 @@ Usage
          * Input/Output is referenced by external file.
          * Cause its values starts with '@'.
          *
+         * @Spec('http://wiki.mycorp.com/display/DG/test+auto+wiki')
          * @In('@json/hello.i.json')
          * @Out('@json/hello.o.json')
          */
@@ -83,6 +84,7 @@ Usage
          * Raw json string.
          *
          * @In('{"uid":3}')
+         * @Out('{"status":"ok","time":139343434,"msg":"good"}')
          */
         public function foo($param) {
         }
@@ -99,5 +101,5 @@ Usage
 
 ### 3. integration with conflucnece rest api
 
-    curl -u admin:admin -X PUT -H 'Content-Type: application/json' -d'{"id":"3604482","type":"page","title":"new page","space":{"key":"TST"},"body":{"storage":{"value":"<p>This is the updated text for the new page</p>","representation":"storage"}},"version":{"number":2}}' http://localhost:8080/confluence/rest/api/content/3604482 | python -mjson.tool
+    ./autowiki output/automan.api
 

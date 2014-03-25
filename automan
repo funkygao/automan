@@ -7,6 +7,7 @@ require_once 'bootstrap.php';
  * Automatically generate api doc according our customized phpdoc tags.
  *
  * Currently supported tags:
+ * @Spec
  * @In
  * @Out
  */
@@ -20,6 +21,12 @@ class Automan
     const WEBMOCK_CONFIG = 'webmocker/automan.json';
     const TESTFILE = 'test.sh';
     const APIFILE = 'output/automan.api';
+    const CONSTFILE = 'output/automan.const';
+
+    public function __construct($configFile) {
+        $cf = json_decode(file_get_contents($configFile), true);
+        require_once $cf['bootstrap'];
+    }
 
     private function _baseClassName($filename)
     {
@@ -82,6 +89,8 @@ class Automan
             'filename' => $filename,
         );
         $reflection = new ReflectionClass($clsname);
+        file_put_contents(self::CONSTFILE, json_encode($reflection->getConstants()));
+
         // parse each method of the controller class
         foreach ($reflection->getMethods() as $method) {
             // handle this controller action
@@ -196,7 +205,7 @@ class Automan
         fclose($fp);
         echo self::WEBMOCK_CONFIG, " genereted!" . PHP_EOL;
         $reloadWebMocker = "kill -HUP `pgrep webmocker`";
-        `$reloadWebMocker`;
+        //`$reloadWebMocker`;  TODO
     }
 
 }
@@ -214,7 +223,7 @@ function main() {
         exit(0);
     }
 
-    $man = new Automan();
+    $man = new Automan(realpath(dirname(__FILE__)) . '/config.json');
     foreach ($argv as $idx => $filename) {
         if ($idx == 0) {
             continue;
@@ -229,8 +238,10 @@ function main() {
         $man->generateBackendTestScript($result);
         $man->generateFrontendTestScript($result);
         $man->generateApiDoc($result);
-        $man->generateWebMockerData($result);
         `phpdoc -f $filename`;
+        echo 'phpdoc generated in output/' . PHP_EOL;
+
+        $man->generateWebMockerData($result);
     }
 }
 

@@ -4,13 +4,31 @@
 sudo easy_install confluence '''
 
 import sys
+import os
 import json
 from confluence import Confluence
 
-URL='http://wiki.localhost.cn/'
-USER='peng.gao'
-PASS='peng.gao'
-SPACE='DG'
+URL='http://wiki.ifunplus.cn/'
+USER=os.getenv('WIKI_USER')
+PASS=os.getenv('WIKI_PASSWD')
+SPACE=os.getenv('SPACE')
+
+def load_config(cf='config.json'):
+    global URL, SPACE, USER, PASS
+    with open(cf) as f:
+        config = json.load(f)
+        URL = config['wiki']['url']
+        if not SPACE:
+            SPACE = config['wiki']['space']
+        if not USER:
+            USER = config['wiki']['username']
+        if not PASS:
+            PASS = config['wiki']['password']
+
+def load_const(fn='output/automan.const'):
+    with open(fn) as f:
+        const = json.load(f)
+        return '{code:JavaScript}' + json.dumps(const, indent=4) + '{code}'
 
 def wikitag(line):
     js = json.loads(line)
@@ -19,8 +37,7 @@ def wikitag(line):
 def wiki_content(fn):
     ''' -> title, content'''
     n = 0
-    title = ''
-    content = 'The following content is genereated by automan\n\n'
+    title, content = '', ''
     for line in open(fn):
         if n == 0:
             # title
@@ -40,10 +57,14 @@ def wiki_content(fn):
 
     return title, content
 
-def main():
+def main(apifile):
+    load_config(os.path.abspath(os.path.dirname(__file__)) + '/config.json')
     cf = Confluence(url=URL, username=USER, password=PASS)
-    pageTitle, pageContent = wiki_content(sys.argv[1])
-    ok = cf.storePageContent(pageTitle, SPACE, pageContent)
+    pageTitle, pageContent = wiki_content(apifile)
+    fullContent = 'The following content is genereated by automan\n\n'
+    fullContent += 'const\n' + load_const() + '\n'
+    fullContent += pageContent
+    ok = cf.storePageContent(pageTitle, SPACE, fullContent)
     if ok:
         print 'feed wiki[%s] ok' % pageTitle
     else:
@@ -54,4 +75,4 @@ if __name__ == '__main__':
         print 'Usage: %s api_filename' % sys.argv[0]
         sys.exit(0)
 
-    main()
+    main(sys.argv[1])
