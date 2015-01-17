@@ -1,0 +1,134 @@
+#!/usr/bin/env python
+#encoding=utf-8
+'''Automatically generate Model class file for php
+requirement: easy_install MySQL-python
+'''
+
+import sys
+import os
+import json
+import MySQLdb
+
+MODEL_BASEDIR=os.getenv('MODEL_BASEDIR')
+
+pool2database = {
+    'tools': 'tools',
+    'lookup': 'ShardLookup',
+    'user': 'UserShard1',
+    'alliance': 'AllianceShard1',
+    'world': 'WorldShard1',
+    }
+
+mysqltype2phptype = {
+    'datetime': 'self::DATETIME',
+    'timestamp': 'self::DATETIME',
+    'date': 'self::DATE',
+    'time': 'self::TIME',
+    
+    'int': 'self::INTEGER',
+    'tinyint': 'self::INTEGER',
+    'smallint': 'self::INTEGER',
+    'mediumint': 'self::INTEGER',
+    'bigint': 'self::INTEGER',
+    
+    'float': 'self::DECIMAL',
+    'double': 'self::DECIMAL',
+    'numeric': 'self::DECIMAL',
+    'decimal': 'self::DECIMAL',
+    'dec': 'self::DECIMAL',
+
+    'char': 'self::STRING',
+    'enum': 'self::STRING',
+    'varchar': 'self::STRING',
+    'blob': 'self::STRING',
+    'text': 'self::STRING',
+    }
+
+record_template='''<?php
+
+namespace Model\Gen;
+
+abstract class %s extends \Model\Base\ActiveRecord {
+    public static $table = '%s';
+    public static $pool = '%s';
+
+    public static $columns = array(
+    %s
+    );
+
+}
+
+'''
+
+def cols_from_mysql(table, dbname):
+    db = MySQLdb.connect(
+            host="localhost", 
+            user="root", 
+            passwd="", 
+            db=dbname) 
+    cur = db.cursor() 
+    cur.execute("SHOW COLUMNS FROM %s" % table)
+    cols = ''
+    shardColumnSet = False
+    for row in cur.fetchall():
+        #field, type, null, key, default, extra
+        field, typ, nullable, key, default, extra = row[0], row[1], row[2], row[3], row[4], row[5]
+        cols += '''
+        array(
+            self::NAME     => '%s',
+            self::TYPE     => %s,''' % (field, col_type(typ))
+        if key == 'PRI':
+            cols += '''
+            self::PK       => TRUE,'''
+        if not shardColumnSet and field in ['uid', 'alliance_id', 'world_id']:
+            shardColumnSet = True
+            cols += '''
+            self::SHARD    => TRUE,'''
+        if default and False:
+            cols += '''
+            self::DEFAULTS => %s,''' % default
+
+        # close bracelet of array
+        cols += '''
+        ),
+        '''
+    return cols
+
+def col_type(raw_type):
+    #TODO
+    typ = raw_type.split()[0]
+    if '(' in typ:
+        typ = typ.split('(')[0]
+    typ = mysqltype2phptype[typ]
+    if typ == 'self::INTEGER' and ' unsigned' in raw_type:
+        typ = 'self::UINT'
+    return typ
+
+def main(model, table, pool):
+    cols = cols_from_mysql(table, pool2database[pool])
+    src = record_template % (model, table, pool, cols)
+    php_file = MODEL_BASEDIR + '/' + model + '.php'
+    with open(php_file, 'w') as f:
+        f.write(src)
+    print '%s generated!' % php_file
+
+
+if __name__ == '__main__':
+    if len(sys.argv) != 4:
+        print 'Usage: %s model_name table_name db_pool_name' % sys.argv[0]
+        print 'Example: %s UserInfoRecord tbl_user_info user' % sys.argv[0]
+        print 'setup env MODEL_BASEDIR before usage'
+        print 'db_pool_name:', pool2database.keys()
+        sys.exit(0)
+
+    if not MODEL_BASEDIR:
+        print 'setenv MODEL_BASEDIR to your model file base dir'
+        sys.exit(0)
+
+    model, table, dbpool = sys.argv[1], sys.argv[2], sys.argv[3]
+    if dbpool not in pool2database:
+        print 'invalid dbpool: %s' % dbpool
+        sys.exit(1)
+
+    main(model, table, dbpool)
+
