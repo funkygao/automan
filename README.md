@@ -25,7 +25,8 @@ Features
 *   keep doc and src close enough
     - less maintainance cost
     - better readability
-*   auto generate Model class php file
+*   auto generate ActiveRecord php code
+    - auto connect to database and generate php code according table schema
 
 Workflow
 ========
