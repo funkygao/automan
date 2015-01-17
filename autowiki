@@ -6,12 +6,16 @@ sudo easy_install confluence '''
 import sys
 import os
 import json
+import shlex
+import subprocess
+import urllib
 from confluence import Confluence
 
 URL='http://wiki.ifunplus.cn/'
 USER=os.getenv('WIKI_USER')
 PASS=os.getenv('WIKI_PASSWD')
-SPACE=os.getenv('SPACE')
+SPACE=os.getenv('WIKI_SPACE')
+APIURL=os.getenv('API_URL') or 'http://dw-integration.socialgamenet.com/api/'
 
 def load_config(cf='config.json'):
     global URL, SPACE, USER, PASS
@@ -25,35 +29,64 @@ def load_config(cf='config.json'):
         if not PASS:
             PASS = config['wiki']['password']
 
+    if not USER or not PASS or not SPACE:
+        print 'setenv [WIKI_USER | WIKI_PASSWD | SPACE] before using me!'
+        sys.exit(1)
+
 def load_const(fn='output/automan.const'):
+    if not os.path.isfile(fn):
+        return ''
     with open(fn) as f:
         const = json.load(f)
+        if not len(const):
+            return ''
         return '{code:JavaScript}' + json.dumps(const, indent=4) + '{code}'
 
-def wikitag(line):
+def load_curl_script(fn='test.sh'):
+    if not os.path.isfile(fn):
+        return ''
+    return '{code:JavaScript}' + open(fn).read() + '{code}'
+
+
+def wikitag(title, line):
     js = json.loads(line)
-    return '{code:JavaScript}' + json.dumps(js, indent=4) + '{code}'
+    if 'ua' in js:
+        del js['ua']
+    return '{code:language=JavaScript|collapse=true|theme=FadeToGrey|linenumbers=true|title=%s}' % title + json.dumps(js, indent=4) + '{code}'
 
 def wiki_content(fn):
     ''' -> title, content'''
-    n = 0
     title, content = '', ''
+    contoller, action, req = '', '', ''
     for line in open(fn):
-        if n == 0:
-            # title
-            content += line
+        line = line.strip()
+        typ, line = line.split('|', 1)
+        if typ == 'title':
+            content += line + '\n'
+            controller, action = line.split('::')
             if title == '':
                 title = line.split(':')[0] + 'Service'
-        elif n == 1:
-            # input json
-            content += 'Request:\n'
-            content += wikitag(line) + '\n'
-        elif n == 2:
-            # ouptut json
-            content += 'Response:\n'
-            content += wikitag(line) + '\n'
-        n += 1
-        n %= 3
+        elif typ == 'in':
+            content += wikitag('Request', line) + '\n'
+            req = json.loads(line)
+        elif typ == 'out':
+            # we build req and get real response as wiki content
+            if line != 'null':
+                # programmer already write the @Out, keep it
+                content += wikitag('Response', line) + '\n'
+                continue
+
+            curl = "curl -G %s -d 'class=%s&method=%s&params=%s'" % (APIURL, controller, action, json.dumps(req))
+
+            print 'fetching:', curl
+
+            curlProc = subprocess.Popen(shlex.split(curl), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            #curlProc.communicate()
+            for response in curlProc.stdout.readlines():
+                if response.startswith('{'):
+                    data = json.dumps(json.loads(response))
+                    content += wikitag('Response', data) + '\n'
+            curlProc.wait()
 
     return title, content
 
@@ -62,17 +95,24 @@ def main(apifile):
     cf = Confluence(url=URL, username=USER, password=PASS)
     pageTitle, pageContent = wiki_content(apifile)
     fullContent = 'The following content is genereated by automan\n\n'
-    fullContent += 'const\n' + load_const() + '\n'
+    curl_script = load_curl_script()
+    if curl_script:
+        fullContent += 'How to manually test on shell:\n' + curl_script + '\n'
+    consts = load_const()
+    if consts:
+        fullContent += 'const\n' + consts + '\n'
     fullContent += pageContent
     ok = cf.storePageContent(pageTitle, SPACE, fullContent)
     if ok:
-        print 'feed wiki[%s] ok' % pageTitle
+        url = URL + 'display/' + SPACE + '/' + pageTitle
+        print '%s ok!' % url
     else:
         print 'feed wiki[%s] fail' % pageTitle
 
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
+    apifile = 'output/automan.api'
+    if not os.path.isfile(apifile):
         print 'Usage: %s api_filename' % sys.argv[0]
         sys.exit(0)
 
-    main(sys.argv[1])
+    main(apifile)

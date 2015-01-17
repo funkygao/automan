@@ -10,11 +10,11 @@ require_once 'bootstrap.php';
  * @Spec
  * @In
  * @Out
+ * @Desc
  */
 class Automan
 {
     const SERVICE = 'Services\\';
-    const ASSETS_BASE = 'http://dw.socialgamenet.com/';
     const URL_BASE = 'http://dw.socialgamenet.com/api/index.php';
     const URL_WEB_MOCK = 'http://localhost:9001';
     const VERBOSE = FALSE;
@@ -44,7 +44,16 @@ class Automan
             return $this->_handleInputTag($filename, $tag);
         } elseif ($tag instanceof Out) {
             return $this->_handleOutputTag($filename, $tag);
-        }
+        } elseif ($tag instanceof Desc) {
+            return $this->_handleDescTag($filename, $tag);
+        } 
+    }
+
+    private function _handleDescTag($filename, Desc $tag)
+    {
+        return array(
+            'desc' => $tag->value,
+        );
     }
 
     private function _handleInputTag($filename, In $tag)
@@ -52,7 +61,6 @@ class Automan
         return array(
             'input' => $tag->getJsonArray($filename),
         );
-
     }
 
     private function _handleOutputTag($filename, Out $tag)
@@ -73,7 +81,11 @@ class Automan
 
     private function _getApiUrl($filename, ReflectionMethod $method)
     {
-        return self::URL_BASE;
+        $urlBase = getenv('API_URL');
+        if (!$urlBase) {
+            $urlBase = self::URL_BASE;
+        }
+        return $urlBase;
     }
 
     public function parsePhpFile($filename)
@@ -97,7 +109,7 @@ class Automan
             $p = new ReflectionAnnotatedMethod($method->class, $method->name);
             $hasTag = FALSE;
             $inputOutput = array();
-            foreach (array('In', 'Out') as $tagName) {
+            foreach (array('In', 'Out', 'Desc') as $tagName) {
                 $tag = $p->getAnnotation($tagName);
                 if (!$tag) {
                     continue;
@@ -127,13 +139,14 @@ class Automan
 
     public function generateFrontendTestScript($parsedResult)
     {
-        echo str_repeat("#", 10) . ' Frontend TEST ' . str_repeat("#", 10) . PHP_EOL;
+        //echo str_repeat("#", 10) . ' Frontend TEST ' . str_repeat("#", 10) . PHP_EOL;
         foreach ($parsedResult['api'] as $api) {
             if (!is_array($api)) {
                 throw Exception("invalid parsed result");
             }
 
             if (!empty($api['io']['input'])) {
+                $api['io']['input']['ua'] = 'ci-robot';
                 $callAddr = 'curl -G ' . self::URL_WEB_MOCK . '/'
                     . $api['controller']
                     . '/'
@@ -145,15 +158,15 @@ class Automan
                 }
                 $callAddr = rtrim($callAddr, '&');
                 $callAddr .= "'";
-                echo $callAddr . PHP_EOL;
+                //echo $callAddr . PHP_EOL;
             }
         }
-        echo PHP_EOL;
+        //echo PHP_EOL;
     }
 
     public function generateBackendTestScript($parsedResult)
     {
-        echo str_repeat("#", 10) . ' Backend TEST ' . str_repeat("#", 10) . PHP_EOL;
+        //echo str_repeat("#", 10) . ' Backend TEST ' . str_repeat("#", 10) . PHP_EOL;
         $script = '';
         foreach ($parsedResult['api'] as $api) {
             if (!is_array($api)) {
@@ -161,20 +174,17 @@ class Automan
             }
 
             if (!empty($api['io']['input'])) {
-                $curl = 'curl -G ' . $api['url'] . " -d '";
+                $api['io']['input']['ua'] = 'ci-robot';
+                $curl = 'curl -s -G ' . $api['url'] . " -d '";
                 $curl .= 'class=' . $api['controller'];
                 $curl .= '&method=' . $api['action'];
-                foreach ($api['io']['input'] as $name => $val) {
-                    // TODO nested json tree
-                    $curl .= '&params[' . $name . ']=' . urlencode($val);
-                }
-                $curl .= "'";
+                $curl .= '&params=' . json_encode($api['io']['input']);
+                $curl .= "' | python -m json.tool";
                 $script .= $curl . PHP_EOL;
-                $script .= 'echo' . PHP_EOL;
-                echo $curl . PHP_EOL;
+                //echo $curl . PHP_EOL;
             }
         }
-        echo PHP_EOL;
+        //echo PHP_EOL;
         file_put_contents(self::TESTFILE, $script);
         echo self::TESTFILE . ' generated!' . PHP_EOL;
     }
@@ -187,12 +197,17 @@ class Automan
 
         $doc = '';
         foreach($parsedResult['api'] as $api) {
-            $doc .= $api['controller'] . '::' . $api['action'] . PHP_EOL;
-            $doc .= json_encode($api['io']['input']) . PHP_EOL;
-            $doc .= json_encode($api['io']['output']) . PHP_EOL;
+            $api['io']['input']['ua'] = 'ci-robot';
+            $doc .= 'title|' . $api['controller'] . '::' . $api['action'] . PHP_EOL;
+            $doc .= 'in|' . json_encode($api['io']['input']) . PHP_EOL;
+            if (isset($api['io']['output'])) {
+                $doc .= 'out|' . json_encode($api['io']['output']) . PHP_EOL;
+            } else {
+                $doc .= 'out|null' . PHP_EOL;
+            }
+            //$doc .= 'desc|' . $api['io']['desc'] . PHP_EOL;
         }
 
-        `mkdir -p output`;
         file_put_contents(self::APIFILE, $doc);
         echo self::APIFILE . ' generated!' . PHP_EOL;
     }
@@ -201,6 +216,10 @@ class Automan
     {
         `mkdir -p webmocker`;
         $fp = fopen(self::WEBMOCK_CONFIG, 'w');
+        if (!defined('JSON_PRETTY_PRINT')) {
+            // only php5.4+ has JSON_PRETTY_PRINT
+            define('JSON_PRETTY_PRINT', 128);
+        }
         fwrite($fp, json_encode($parsedResult, JSON_PRETTY_PRINT));
         fclose($fp);
         echo self::WEBMOCK_CONFIG, " genereted!" . PHP_EOL;
@@ -212,7 +231,9 @@ class Automan
 
 function showHelp() {
     global $argv;
-    echo "Usage: " . $argv[0] . " filename [filename]\n";
+    echo "Usage: " . $argv[0] . " PhpServiceFilename" . PHP_EOL;
+    echo "\nsetenv:\nAPI_URL=" . Automan::URL_BASE . "\n";
+    echo "WIKI_USER=peng.gao\nWIKI_PASSWD=\n";
 }
 
 function main() {
@@ -222,6 +243,7 @@ function main() {
         showHelp();
         exit(0);
     }
+    `mkdir -p output`;
 
     $man = new Automan(realpath(dirname(__FILE__)) . '/config.json');
     foreach ($argv as $idx => $filename) {
@@ -235,13 +257,13 @@ function main() {
             return;
         }
 
+        //`phpdoc -f $filename`;
+        //echo 'phpdoc generated in output/' . PHP_EOL;
         $man->generateBackendTestScript($result);
-        $man->generateFrontendTestScript($result);
+        //$man->generateFrontendTestScript($result);
         $man->generateApiDoc($result);
-        `phpdoc -f $filename`;
-        echo 'phpdoc generated in output/' . PHP_EOL;
 
-        $man->generateWebMockerData($result);
+        //$man->generateWebMockerData($result);
     }
 }
 

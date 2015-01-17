@@ -1,7 +1,7 @@
 {
     "bootstrap": "/Users/gaopeng/fun/dragon-server-code/v2/init.php",
     "wiki": {
-        "url": "http://wiki.mycorp.cn/",
+        "url": "http://wiki.ifunplus.cn/",
         "space": "DG",
         "username": "peng.gao",
         "password": "xxx"

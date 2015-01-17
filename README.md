@@ -1,7 +1,7 @@
 automan
 =======
 
-Auto generate [api doc | mock service/data | test script] for backend/frontend developpers for loosely coupled teamwork.
+Auto generate [api doc | mock service/data | test script | model class] for backend/frontend developpers for loosely coupled teamwork.
     
                    __                                
     _____   __ ___/  |_  ____   _____ _____    ____  
@@ -25,7 +25,7 @@ Features
 *   keep doc and src close enough
     - less maintainance cost
     - better readability
-
+*   auto generate Model class php file
 
 Workflow
 ========
@@ -39,7 +39,7 @@ Workflow
            |-----+                                  |           |
            |     |                                  |           |
            |  2. | write php skeleton               |           |
-           |     | with @In/@Out tags               |           |
+           |     | with @In/@Out/@Spec/@Desc tags   |           |
            |     |                                  |           |
            |<----+                                  |           |
            |                                        |           |
@@ -60,7 +60,6 @@ Workflow
 Usage
 =====
 
-
 ### 1. php integration
 
     class UserService {
@@ -72,6 +71,7 @@ Usage
          * @Spec('http://wiki.mycorp.com/display/DG/test+auto+wiki')
          * @In('@json/hello.i.json')
          * @Out('@json/hello.o.json')
+         * @Desc('just a hello world')
          */
         public function helloWorld($param) {
             return array(
@@ -99,7 +99,28 @@ Usage
 
     e.g, ./automan /Users/gaopeng/fun/dragon-server-code/v2/classes/Services/AccountService.php
 
-### 3. integration with conflucnece rest api
+### 3. integration with confluence rest api
 
     ./autowiki output/automan.api
+
+### 4. generate php Model class
+
+    ./automodel model_name table_name db_pool_name
+
+
+Best Practice
+=============
+
+    git clone git@bitbucket.org:funkygao_/automan.git
+
+    in your .profile/.bash_profile:
+    export PATH=$PATH:${automan_basedir}
+
+    config your dev env by setting:
+    1. config.json
+    2. env variable:
+       WIKI_USER 
+       WIKI_PASSWD
+       WIKI_SPACE
+       MODEL_BASEDIR
 
