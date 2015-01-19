@@ -1,7 +1,7 @@
 automan
 =======
 
-Auto generate [api doc | mock service/data | test script | model class] for backend/frontend developpers for loosely coupled teamwork.
+Auto generate [api doc | mock service/data | test script | ActiveRecord php code] for backend/frontend developers for loosely coupled teamwork.
     
                    __                                
     _____   __ ___/  |_  ____   _____ _____    ____  
