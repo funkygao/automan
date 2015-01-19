@@ -77,7 +77,7 @@ Usage
          * @Out('@json/hello.o.json')
          * @Desc('just a hello world')
          */
-        public function helloWorld($param) {
+        public function helloWorld(array $param) {
             return array(
                 'uid' => 5,
                 'status' => 'ok',
@@ -89,8 +89,12 @@ Usage
          *
          * @In('{"uid":3}')
          * @Out('{"status":"ok","time":139343434,"msg":"good"}')
+         *
+         * If @Out is empty, automan will automatically simulate http request and get payload to
+         * fill in the @Out.
+         * Especially useful if @Out payload is very very big and hard to document it in php
          */
-        public function foo($param) {
+        public function foo(array $param) {
         }
     }
 
