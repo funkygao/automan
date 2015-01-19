@@ -2,14 +2,17 @@ automan
 =======
 
 Auto generate [api doc | mock service/data | test script | ActiveRecord php code] for backend/frontend developers for loosely coupled teamwork.
-    
+
                    __                                
     _____   __ ___/  |_  ____   _____ _____    ____  
     \__  \ |  |  \   __\/  _ \ /     \\__  \  /    \ 
      / __ \|  |  /|  | (  <_> )  Y Y  \/ __ \|   |  \
     (____  /____/ |__|  \____/|__|_|  (____  /___|  /
          \/                         \/     \/     \/ 
-    
+   
+*   automan
+*   autowiki
+*   automodel
 
 Features
 ========
